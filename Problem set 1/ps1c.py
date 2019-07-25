@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul 24 22:08:31 2019
+Created on Wed Jul 24 22:31:12 2019
 
 @author: Paul
 
-Time spent: About 20 minutes
+Time spent: About half an hour, mostly spent tweaking the stopping condition
 """
 
-def credit_card_payoff(balance, int_rate, dollar_increment = 10.0, max_months = 12, debug = False):
+# Bisection search method
+def credit_card_exact_payoff(balance, int_rate, dollar_increment = 0.01, max_months = 12, debug = False):
     """
     Function to compute minimum fixed payment to pay off a balance within 12 months
     balance: float
@@ -18,15 +19,18 @@ def credit_card_payoff(balance, int_rate, dollar_increment = 10.0, max_months = 
     """
 
     # Initialize variables
-    pay = 0.0
+    lbound = balance / 12.0
+    ubound = (balance * (1 + int_rate / 12.0) ** 12) / 12
+    # Pay amount starts at the midpoint, rounded up
     tmp_balance = balance
 
     # Main loop
-    while tmp_balance > 0:
+    # My stopping condition needs to check that we are to the nearest cent
+    while ubound - lbound > .01:
     
         # Set the current helper variables
         tmp_balance = balance
-        pay += dollar_increment
+        pay = round(100 * (lbound + ubound) / 2, 0) / 100
         month = 0
 
         # Check if current payment amount works
@@ -36,30 +40,35 @@ def credit_card_payoff(balance, int_rate, dollar_increment = 10.0, max_months = 
             
             # Definitions given in the problem set
             # Add the month's interest then subtract the month's payment
-            tmp_balance = round(tmp_balance + tmp_balance * int_rate/12 - pay, 2)
+            tmp_balance = tmp_balance + tmp_balance * int_rate/12 - pay
         
         # Debugging
         if debug:
             print('  When paying $' + str(pay) +  ' per month, the balance after ' + str(month) + ' months is $' + str(tmp_balance))
+            print('    Current lbound = ' + str(lbound))
+            print('    Current ubound = ' + str(ubound))
+        
+        # Update ubound and lbound for the next run
+        if tmp_balance > 0:
+            lbound = (lbound + ubound) / 2
+        elif tmp_balance < 0:
+            ubound = (lbound + ubound) / 2
     
     # Print final results
     print('RESULTS')
     print('Monthly payment to pay off debt in 1 year: $' + str(pay))
     print('Number of months needed: ' + str(month))
-    print('Balance: $' + str(tmp_balance))
+    print('Balance: $' + str(round(tmp_balance, 2)))
     print('')
     
-## First test case with debugging
-#credit_card_payoff(1200, .18, debug = True)
-#
 ## First test case
-#credit_card_payoff(1200, .18)
+#credit_card_exact_payoff(320000, .2, debug = True)
 #
 ## Second test case
-#credit_card_payoff(32000, .2)
-    
+#credit_card_exact_payoff(999999, .18, debug = True)
+#    
 # Custom parameters
-balance = float(raw_input('Enter the annual credit card interest rate as a decimal: '))
+balance = float(raw_input('Enter the outstanding balance on your credit card: '))
 int_rate = float(raw_input('Enter the annual credit card interest rate as a decimal: '))
 
-credit_card_payoff(balance, int_rate)
+credit_card_exact_payoff(balance, int_rate)
