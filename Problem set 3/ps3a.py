@@ -76,7 +76,16 @@ def get_word_score(word, n):
     word: string (lowercase letters)
     returns: int >= 0
     """
-    # TO DO...
+    # Temporary variables
+    score = 0
+    wlen = len(word)
+    len_bonus = 50 * (wlen == n)
+    
+    # Iterate through word
+    for letter in word:
+        score += SCRABBLE_LETTER_VALUES.get(letter)
+    
+    return(score * wlen + len_bonus)
     
 #
 # Make sure you understand how this function works and what it does!
@@ -145,7 +154,17 @@ def update_hand(hand, word):
     hand: dictionary (string -> int)    
     returns: dictionary (string -> int)
     """
-    # TO DO ...
+    # Copy hand
+    newhand = hand.copy()
+    
+    # Iterate through the word
+    for letter in word:
+        # Updated letter count
+        newcount = newhand.get(letter) - 1
+        # Remove one copy of the current letter from hand
+        newhand.update({letter: newcount})
+    
+    return(newhand)
 
 #
 # Problem #3: Test word validity
