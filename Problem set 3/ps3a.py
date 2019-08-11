@@ -179,7 +179,19 @@ def is_valid_word(word, hand, word_list):
     hand: dictionary (string -> int)
     word_list: list of lowercase strings
     """
-    # TO DO...
+    # Check whether the word is in word_list
+    in_list = word in word_list
+    # Check whether the word can be constructed from the hand
+    valid = True
+    # Check whether there are enough letters for the word
+    try:
+        # Must not have decremented the letter count past 0
+        valid = min(update_hand(hand, word).values()) >= 0 
+    # Fallback for missing letters
+    except TypeError:
+        valid = False
+    # Return True when both conditions are true
+    return(in_list & valid)
 
 def calculate_handlen(hand):
     handlen = 0
