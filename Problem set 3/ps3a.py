@@ -3,7 +3,6 @@
 # The 6.00 Word Game
 # Created by: Kevin Luu <luuk> and Jenna Wiens <jwiens>
 #
-#
 
 import random
 import string
@@ -207,22 +206,22 @@ def play_hand(hand, word_list):
     """
     Allows the user to play the given hand, as follows:
 
-    * The hand is displayed.
+    1) The hand is displayed.
     
-    * The user may input a word.
+    2) The user may input a word.
 
-    * An invalid word is rejected, and a message is displayed asking
+    3) An invalid word is rejected, and a message is displayed asking
       the user to choose another word.
 
-    * When a valid word is entered, it uses up letters from the hand.
+    4) When a valid word is entered, it uses up letters from the hand.
 
-    * After every valid word: the score for that word is displayed,
+    5) After every valid word: the score for that word is displayed,
       the remaining letters in the hand are displayed, and the user
       is asked to input another word.
 
-    * The sum of the word scores is displayed when the hand finishes.
+    6) The sum of the word scores is displayed when the hand finishes.
 
-    * The hand finishes when there are no more unused letters.
+    7) The hand finishes when there are no more unused letters.
       The user can also finish playing the hand by inputing a single
       period (the string '.') instead of a word.
 
@@ -230,7 +229,31 @@ def play_hand(hand, word_list):
       word_list: list of lowercase strings
       
     """
-    # TO DO ...
+    # Variables to store
+    points = 0
+    
+    # Main loop
+    while calculate_handlen(hand) > 0:
+        # Take user input
+        print('Current hand: ')
+        display_hand(hand)
+        attempt = raw_input('Enter word, or a "." to indicate that you are finished: ')
+        # Check input
+        if attempt == '.':
+            print('Total score: ' + str(points))
+            break
+        elif is_valid_word(attempt, hand, word_list) == False:
+            print('Invalid word, please try again.')
+        else:
+            # Update hand
+            hand = update_hand(hand, attempt)
+            # Score word
+            value = get_word_score(attempt, n = HAND_SIZE)
+            points += value
+            # Output
+            print('"' + attempt + '" earned ' + str(value) + " points. " + \
+                  "Total: " + str(points) + ' points')
+            print('')
 
 #
 # Problem #5: Playing a game
@@ -240,7 +263,7 @@ def play_game(word_list):
     """
     Allow the user to play an arbitrary number of hands.
 
-    * Asks the user to input 'n' or 'r' or 'e'.
+    1) Asks the user to input 'n' or 'r' or 'e'.
 
     * If the user inputs 'n', let the user play a new (random) hand.
       When done playing the hand, ask the 'n' or 'e' question again.
@@ -251,7 +274,27 @@ def play_game(word_list):
 
     * If the user inputs anything else, ask them again.
     """
-    # TO DO...
+    # Initial hand is empty
+    hand = None
+    # Loop until exiting
+    while True:
+        # Ask for input
+        user_select = ''
+        while user_select not in ('n', 'r', 'e'):
+            user_select = \
+            raw_input('Please enter "n" to play a new hand, "r" to ' + \
+                      'replay the last hand, or "e" to exit the game. ')
+        # Parse input
+        if user_select == 'e':
+            print('Thanks for playing!')
+            break
+        elif user_select == 'n' or hand == None:
+            print('Dealing a new hand...')
+            hand = deal_hand(n = HAND_SIZE)
+            play_hand(hand, word_list)
+        elif user_select == 'r':
+            print('Replaying previous hand...')
+            play_hand(hand, word_list)
 
 #
 # Build data structures used for entire session and play game
