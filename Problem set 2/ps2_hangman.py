@@ -43,14 +43,6 @@ def choose_word(wordlist):
 # end of helper code
 # -----------------------------------
 
-# Load the wordlist
-wordlist = load_words()
-    
-# your code begins here!
-
-# Helper variables
-debug_print = "   (debug) "
-
 # Helper function to print the not yet guessed letters
 def get_remaining_letters(guessed_letters, debug = False):
     # Lower-case alphabet
@@ -144,6 +136,7 @@ def hangman(max_guesses = 8, debug = False):
             print separator
             print "Congratulations! My word was: " + answer
             print "You won using " + str(max_guesses - guesses) + " guesses."
+            raw_input("Press enter to exit.")
             break
         
         # Check if guessed a new letter in the word
@@ -158,3 +151,12 @@ def hangman(max_guesses = 8, debug = False):
             if guesses == 0:
                 print "Out of guesses! My word was: " + answer
                 print "Let's play again soon."
+                raw_input("Press enter to exit.")
+
+if __name__ == '__main__':
+    # Load the wordlist
+    wordlist = load_words()
+    # Helper variables
+    debug_print = "   (debug) "
+    # Main function
+    hangman()
