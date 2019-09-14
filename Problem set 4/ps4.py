@@ -99,6 +99,17 @@ def get_fable_string():
 #
 # Problem 1: Encryption
 #
+    
+def shift_checker(shift, lower = -27, upper = 27):
+    """
+    Ensures shift is in the valid range -27 < shift < 27.
+    If not, set to 0.
+    """
+    if not isinstance(shift, int) or shift <= lower or shift >= upper:
+        print('Invalid shift = ' + str(shift) + '; using 0 ')
+        shift = 0
+    return(shift)
+
 def build_coder(shift):
     """
     Returns a dict that can apply a Caesar cipher to a letter.
@@ -120,8 +131,21 @@ def build_coder(shift):
     'v': 'y', 'y': 'a', 'x': ' ', 'z': 'b'}
     (The order of the key-value pairs may be different.)
     """
-    ### TODO.
-
+    shift = shift_checker(shift)
+    # Make sure upper/lower case is preserved
+    lower_keys = string.ascii_lowercase + ' '
+    upper_keys = string.ascii_uppercase + ' '
+    # Construct a dictionary
+    coder = {}
+    for i, letters in enumerate(upper_keys):
+        # Add the keys in order, but the value is shifted
+        coder.update({letters : (upper_keys + upper_keys)[i + shift]})
+    for i, letters in enumerate(lower_keys):
+        # Add the keys in order, but the value is shifted
+        coder.update({letters : (lower_keys + lower_keys)[i + shift]})
+    # Return result
+    return(coder)
+    
 def build_encoder(shift):
     """
     Returns a dict that can be used to encode a plain text. For example, you
@@ -149,7 +173,9 @@ def build_encoder(shift):
 
     HINT : Use build_coder.
     """
-    ### TODO.
+    shift = shift_checker(shift, lower = 0)
+    # Create the coder dictionary
+    return(build_coder(shift))
 
 def build_decoder(shift):
     """
@@ -179,10 +205,12 @@ def build_decoder(shift):
 
     HINT : Use build_coder.
     """
-    ### TODO.
+    shift = shift_checker(shift, lower = 0)
+    # Create the coder dictionary
+    return(build_coder(-1 * shift))
  
 
-def apply_coder(text, coder):
+def apply_coder(text, coder, debug = False):
     """
     Applies the coder to the text. Returns the encoded text.
 
@@ -196,8 +224,27 @@ def apply_coder(text, coder):
     >>> apply_coder("Khoor,czruog!", build_decoder(3))
     'Hello, world!'
     """
-    ### TODO.
-  
+    # Create an empty output string
+    output = ''
+    # Iterate through the text
+    for letters in text:
+        # Figure out the replacement, if any
+        replacement = coder.get(letters)
+        if debug:
+            print('Looking up: ' + letters + ' : ' + str(replacement))
+        if replacement == None:
+            replacement = letters
+        if debug:
+            print('Current replacement for ' + letters + ' = ' + replacement)
+        # Append the translated text to output
+        output += replacement
+        if debug:
+            print('Current text: ' + output)
+    # Return result
+    return(output)
+
+# For debugging
+# apply_coder('abc ABC 123!', coder, True)
 
 def apply_shift(text, shift):
     """
@@ -216,7 +263,8 @@ def apply_shift(text, shift):
     >>> apply_shift('This is a test.', 8)
     'Apq hq hiham a.'
     """
-    ### TODO.
+    shift = shift_checker(shift)
+    return(apply_coder(text, build_coder(shift)))
    
 #
 # Problem 2: Codebreaking.

@@ -2,5 +2,13 @@ Your algorithms should be plain English explanations for the steps your program 
 
 Write out your algorithm for Problem 2 here:
 
+For each shift_int from 0 to 27, inclusive:
+	Shift the letters in the string by shift_int
+	For each substring, from the beginning of the current string to the next space:
+		Check for valid words, where a valid word is all characters from the start of current_string to the next space, or the last character
+		Trim the current tested word from the front of this substring
+	Save the count of valid words for this shift_int
+Return the integer shift_int producing the maximum count of valid words
+	
 
 Write out your algorithm for Problem 4 here:
