@@ -100,13 +100,14 @@ def get_fable_string():
 # Problem 1: Encryption
 #
     
-def shift_checker(shift, lower = -27, upper = 27):
+def shift_checker(shift, lower = -27, upper = 27, debug = False):
     """
     Ensures shift is in the valid range -27 < shift < 27.
     If not, set to 0.
     """
     if not isinstance(shift, int) or shift <= lower or shift >= upper:
-        print('Invalid shift = ' + str(shift) + '; using 0 ')
+        if debug:
+            print('Invalid shift = ' + str(shift) + '; using 0 ')
         shift = 0
     return(shift)
 
@@ -269,7 +270,7 @@ def apply_shift(text, shift):
 #
 # Problem 2: Codebreaking.
 #
-def find_best_shift(wordlist, text):
+def find_best_shift(wordlist, text, debug = False):
     """
     Decrypts the encoded text and returns the plaintext.
 
@@ -284,9 +285,46 @@ def find_best_shift(wordlist, text):
     8
     >>> apply_coder(s, build_decoder(8)) returns
     'Hello, world!'
+    
+    Pseudocode:
+    For each shift_int from 0 to 27, inclusive:
+        Shift the letters in the string by shift_int
+        For each substring, from the beginning of the current string to the next space:
+            Check for valid words, where a valid word is all characters from the start of current_string to the next space, or the last character
+            Trim the current tested word from the front of this substring
+        Save the count of valid words for this shift_int
+    Return the integer shift_int producing the maximum count of valid words
     """
-    ### TODO
+    # Store the results from our shifts
+    shift_results = {}
+    # Loop through the possible shifts (0 to 27)
+    for shift in range(0, 27):
+        # Decode the text with the current shift, and split it into words
+        shift_text = apply_coder(text, build_decoder(int(shift)))
+        candidate_words = string.split(shift_text,  sep = ' ', )
+        # Count number of words and store result
+        wordcount = 0
+        for word in candidate_words:
+            wordcount += is_word(wordlist, word)
+        shift_results.update({shift : wordcount})
+        # Debug output
+        if debug:
+            print('SHIFT = ' + str(shift))
+            print('  Current text is: ' + shift_text)
+            print('  There are ' + str(len(candidate_words)) + ' candidate words.')
+            print('  There are ' + str(wordcount) + ' valid words.')
+    # Debug output
+    if debug:
+        print('Final results: ')
+        print(shift_results)
+    # Return results
+    return(max(shift_results, key = shift_results.get))
    
+# find_best_shift(wordlist, 'hello there people who ArE reading This', debug = True)
+# s = apply_coder('Hello, world!', build_encoder(8))
+# find_best_shift(wordlist, s)
+# apply_coder(s, build_decoder(8))
+    
 #
 # Problem 3: Multi-level encryption.
 #
