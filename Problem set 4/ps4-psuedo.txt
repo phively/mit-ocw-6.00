@@ -12,3 +12,20 @@ Return the integer shift_int producing the maximum count of valid words
 	
 
 Write out your algorithm for Problem 4 here:
+
+(I'm assuming that the message is made up entirely of dictionary words. Otherwise the consecutive word condition may fail.)
+
+With the current string:
+	idx = starting character of the current substring (as compared to the full string)
+	temp_results = list to store results from attempting the decryption with shifts from 0 to 27
+	For each shift_int from 0 to 27:
+		Shift the letters in the string by shift_int.
+		For each substring, from the beginning of the decoded string to the next space:
+			Check for valid CONSECUTIVE words, using the same valid words definition from problem 2.
+		x = the count of valid consecutive words for this shift_int
+		next_idx = the character index of the location of the first non-valid word
+		Add x and next_idx to temp_results
+	best_shift = the shift_int maximizing x for the current string
+	Add (idx, best_shift) to output_list, the list of tuples to return
+	Recursively call this function on the substring starting at the next_idx associated with the maximized x, and continuing to the end of the string
+	Return output_list

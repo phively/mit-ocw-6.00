@@ -344,8 +344,16 @@ def apply_shifts(text, shifts):
     >>> apply_shifts("Do Androids Dream of Electric Sheep?", [(0,6), (3, 18), (12, 16)])
     'JufYkaolfapxQdrnzmasmRyrpfdvpmEurrb?'
     """
-    ### TODO.
- 
+    # Create a string to store the output
+    # Its initial state is just the unencrypted text
+    output = text
+    # Iterate through the shifts
+    for start, shift in shifts:
+        # Keep up to start unchanged, then apply the shift to the piece after start
+        output = output[:start] + apply_shift(output[start:], shift)
+    # Return the final result
+    return(output)
+
 #
 # Problem 4: Multi-level decryption.
 #
