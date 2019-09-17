@@ -358,8 +358,7 @@ def apply_shifts(text, shifts):
 # Problem 4: Multi-level decryption.
 #
 
-
-def find_best_shifts(wordlist, text):
+def find_best_shifts(wordlist, text, debug = False):
     """
     Given a scrambled string, returns a shift key that will decode the text to
     words in wordlist, or None if there is no such key.
@@ -387,8 +386,9 @@ def find_best_shifts(wordlist, text):
     >>> print apply_shifts(s, shifts)
     Do Androids Dream of Electric Sheep?
     """
+    return(find_best_shifts_rec(wordlist, text, 0, debug))
 
-def find_best_shifts_rec(wordlist, text, start):
+def find_best_shifts_rec(wordlist, text, start, debug = False):
     """
     Given a scrambled string and a starting position from which
     to decode, returns a shift key that will decode the text to
@@ -402,11 +402,68 @@ def find_best_shifts_rec(wordlist, text, start):
     start: where to start looking at shifts
     returns: list of tuples.  each tuple is (position in text, amount of shift)
     """
-    ### TODO.
+    # Debug output
+    if debug:
+        print('Current full text is: ' + text)
+        print('Current scrambled text is: ' + text[start:])
+    # Iterate through the possible shifts
+    for shift in range(0, 27):
+        # Generate a test string, the currently decoded prefix plus a shifted suffix
+        prefix = text[:start]
+        suffix = apply_shift(text[start:], shift)
+        # Debug output
+        if debug:
+            print('  shift = ' + str(shift) + '; text = ' + prefix + suffix)
+        # Check for a new word boundary, i.e. a space
+        next_space = string.find(suffix, ' ')
+        # If a space was found
+        if next_space >= 0:
+            # String up to space is a word
+            if is_word(wordlist, suffix[:next_space]):
+                # Recursively run algorithm on the next substring
+                # Debug output
+                if debug:
+                    print('  Word found using ' + str((start, shift)))
+                    print('    Calling recursively on ' + suffix)
+                new_call = find_best_shifts_rec(wordlist, prefix + suffix, start + next_space + 1, debug)
+                # Debug output
+                if debug:
+                    print('  New call output is ' + str(new_call) + ' ' + str(type(new_call)))
+                # If new_call is a list of tuples, then great! We succeeded
+                if new_call != None:
+                    # Only save the (start, shift) when shift is nonzero
+                    current_call = [(start, shift)]
+                    if debug:
+                        print('Current call output is ' + str([(start, shift)]))
+                    if shift == 0:
+                        if debug:
+                            print('Shift is 0; skipping word')
+                            return(new_call)
+                    return(current_call + new_call)
+            # Don't need an else condition; the else is just to continue looping
+        # BASE CASE: no spaces found
+        if next_space == -1:
+            # Success: the rest of the string is a word
+            if is_word(wordlist, suffix[:]):
+                # Debug output
+                if debug:
+                    print('  SUCCESS! Returning ' + str((start, shift)))
+                if shift == 0:
+                    if debug:
+                        print('  Last word is in plaintext, skipping')
+                        return([])
+                return([(start, shift)])
+            # Failure: the rest of the string is not a word
+            # Keep looping and try again with a different shift
+    # Fallback: no valid shifts were found so return None
+    return(None)
+
+# find_best_shifts_rec(wordlist, apply_shifts('good deal', [(0, 3), (5, 20)]), 0, debug = True)
+# find_best_shifts_rec(wordlist, apply_shifts('good deals all day today', [(0, 3), (5, 20), (15, 11)]), 0, debug = True)
 
 
-def decrypt_fable():
-     """
+def decrypt_fable(debug = False):
+    """
     Using the methods you created in this problem set,
     decrypt the fable given by the function get_fable_string().
     Once you decrypt the message, be sure to include as a comment
@@ -415,15 +472,27 @@ def decrypt_fable():
 
     returns: string - fable in plain text
     """
-    ### TODO.
+    decryptors = find_best_shifts(wordlist, get_fable_string(), debug)
+    text = apply_shifts(get_fable_string(), decryptors)
+    return(text)
 
 
+# 'An Ingenious Man who had built a flying machine invited a great concourse of
+# people to see it go up. at the appointed moment, everything being ready, he
+# boarded the car and turned on the power. the machine immediately broke
+# through the massive substructure upon which it was builded, and sank out of
+# sight into the earth, the aeronaut springing out a rely in time to save
+# himself. "well," said he, "i have done enough to demonstrate the correctness
+# of my details. the defects," he added, with a add hat the ruined brick work,
+# "are merely a sic and fundamental." upon this assurance the people came
+# ox ward with subscriptions to build a second machine'
 
-    
-#What is the moral of the story?
-#
-#
-#
-#
-#
+# What is the moral of the story?
+# 
+# Beware of all hat no cattle types, I suppose. More seriously, without sound
+# knowledge of fundamentals, it's a thin line between disaster and glory.
+# 
+# Also, don't rely on a brute force decoder to produce poetry, or even to get
+# every word right. I enjoy some of the creative grammatical results
+# (e.g. shouldn't it be "merely BASIC and fundamental").
 
