@@ -45,7 +45,41 @@ def process(url):
 
 # Problem 1
 
-# TODO: NewsStory
+class NewsStory(object):
+    
+    # Initialization
+    def __init__(self, guid, title, subject, summary, link):
+        """
+        Create a NewsStory object
+        globally unique identifier (GUID) – a string that serves as a unique name for this entry
+        title – a string
+        subject – a string
+        summary – a string
+        link to more content – a string
+        """
+        # Ensure the passed parameters are strings
+        assert type(guid) == str and type(title) == str and type(subject) == str \
+            and type(summary) == str and type(link) == str, \
+            "All parameters must be strings!"
+            
+        # Assignments
+        self.guid = guid
+        self.title = title
+        self.subject = subject
+        self.summary = summary
+        self.link = link
+    
+    # Get methods
+    def get_guid(self):
+        return(self.guid)
+    def get_title(self):
+        return(self.title)
+    def get_subject(self):
+        return(self.subject)
+    def get_summary(self):
+        return(self.summary)
+    def get_link(self):
+        return(self.link)
 
 #======================
 # Part 2
