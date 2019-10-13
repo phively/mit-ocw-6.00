@@ -281,12 +281,12 @@ if __name__ == "__main__":
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(ProblemSet5NewsStory))
     suite.addTest(unittest.makeSuite(ProblemSet5))
-    #import t2
-    #suite.addTest(unittest.makeSuite(t2.ProblemSet5TriggerFile))
+#    import t2
+#    suite.addTest(unittest.makeSuite(t2.ProblemSet5TriggerFile))
     unittest.TextTestRunner(verbosity=2).run(suite)
-    #print "t2 score", t2.score
-    #print "t2 potential score", t2.potential_score
-    #score += t2.score
-    #potential_score += t2.potential_score
-    #print "Total score: ", float(score) / float(potential_score) * 4.0
+#    print "t2 score", t2.score
+#    print "t2 potential score", t2.potential_score
+#    score += t2.score
+#    potential_score += t2.potential_score
+#    print "Total score: ", float(score) / float(potential_score) * 4.0
 
