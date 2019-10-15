@@ -143,14 +143,43 @@ class SummaryTrigger(WordTrigger):
 # Problems 6-8
 
 # TODO: NotTrigger
-# TODO: AndTrigger
-# TODO: OrTrigger
+class NotTrigger(Trigger):
+    def __init__(self, trigger):
+        self.t = trigger
+    
+    def evaluate(self, news):
+        return not self.t.evaluate(news)
 
+# TODO: AndTrigger
+class AndTrigger(Trigger):
+    def __init__(self, trigger1, trigger2):
+        self.t1 = trigger1
+        self.t2 = trigger2
+    
+    def evaluate(self, news):
+        return self.t1.evaluate(news) and self.t2.evaluate(news)
+
+# TODO: OrTrigger
+class OrTrigger(Trigger):
+    def __init__(self, trigger1, trigger2):
+        self.t1 = trigger1
+        self.t2 = trigger2
+        
+    def evaluate(self, news):
+        return self.t1.evaluate(news) or self.t2.evaluate(news)
 
 # Phrase Trigger
 # Question 9
 
 # TODO: PhraseTrigger
+class PhraseTrigger(Trigger):
+    def __init__(self, phrase):
+        self.phrase = phrase
+        
+    def evaluate(self, news):
+        return self.phrase in news.get_subject() \
+            or self.phrase in news.get_title() \
+            or self.phrase in news.get_summary()
 
 #
 ##======================
