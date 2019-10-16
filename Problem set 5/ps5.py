@@ -60,10 +60,10 @@ class NewsStory(object):
         link to more content – a string
         """
         # Ensure the passed parameters are strings
-        assert type(guid) == str and type(title) == str and type(subject) == str \
-            and type(summary) == str and type(link) == str, \
-            "All parameters must be strings!"
-            
+#        assert type(guid) == str and type(title) == str and type(subject) == str \
+#            and type(summary) == str and type(link) == str, \
+#            "All parameters must be strings!"
+#            
         # Assignments
         self.guid = guid
         self.title = title
@@ -186,89 +186,96 @@ class PhraseTrigger(Trigger):
 ## Part 3
 ## Filtering
 ##======================
-#
-#def filter_stories(stories, triggerlist):
-#    """
-#    Takes in a list of NewsStory-s.
-#    Returns only those stories for whom
-#    a trigger in triggerlist fires.
-#    """
-#    # TODO: Problem 10
-#    # This is a placeholder (we're just returning all the stories, with no filtering) 
-#    # Feel free to change this line!
-#    return stories
-#
+
+def filter_stories(stories, triggerlist):
+    """
+    Takes in a list of NewsStory-s.
+    Returns only those stories for whom
+    a trigger in triggerlist fires.
+    """
+    # TODO: Problem 10
+    # Create a new list to store matching stories
+    filtered_stories = []
+    # Iterate through the stories and check whether they match a trigger
+    for story in stories:
+        for trigger in triggerlist:
+            if trigger.evaluate(story):
+                filtered_stories.append(story)
+                break
+    # Return all remaining stories
+    return filtered_stories
+
 ##======================
 ## Part 4
 ## User-Specified Triggers
-##======================
-#
-#def readTriggerConfig(filename):
-#    """
-#    Returns a list of trigger objects
-#    that correspond to the rules set
-#    in the file filename
-#    """
-#    # Here's some code that we give you
-#    # to read in the file and eliminate
-#    # blank lines and comments
-#    triggerfile = open(filename, "r")
-#    all = [ line.rstrip() for line in triggerfile.readlines() ]
-#    lines = []
-#    for line in all:
-#        if len(line) == 0 or line[0] == '#':
-#            continue
-#        lines.append(line)
-#
-#    # TODO: Problem 11
-#    # 'lines' has a list of lines you need to parse
-#    # Build a set of triggers from it and
-#    # return the appropriate ones
-#    
-#import thread
-#
-#def main_thread(p):
-#    # A sample trigger list - you'll replace
-#    # this with something more configurable in Problem 11
-#    t1 = SubjectTrigger("Obama")
-#    t2 = SummaryTrigger("MIT")
-#    t3 = PhraseTrigger("Supreme Court")
-#    t4 = OrTrigger(t2, t3)
-#    triggerlist = [t1, t4]
-#    
-#    # TODO: Problem 11
-#    # After implementing readTriggerConfig, uncomment this line 
-#    #triggerlist = readTriggerConfig("triggers.txt")
-#
-#    guidShown = []
-#    
-#    while True:
-#        print "Polling..."
-#
-#        # Get stories from Google's Top Stories RSS news feed
-#        stories = process("http://news.google.com/?output=rss")
-#        # Get stories from Yahoo's Top Stories RSS news feed
-#        stories.extend(process("http://rss.news.yahoo.com/rss/topstories"))
-#
-#        # Only select stories we're interested in
-#        stories = filter_stories(stories, triggerlist)
-#    
-#        # Don't print a story if we have already printed it before
-#        newstories = []
-#        for story in stories:
-#            if story.get_guid() not in guidShown:
-#                newstories.append(story)
-#        
-#        for story in newstories:
-#            guidShown.append(story.get_guid())
-#            p.newWindow(story)
-#
-#        print "Sleeping..."
-#        time.sleep(SLEEPTIME)
-#
-#SLEEPTIME = 60 #seconds -- how often we poll
-#if __name__ == '__main__':
-#    p = Popup()
-#    thread.start_new_thread(main_thread, (p,))
-#    p.start()
-#
+#======================
+
+def readTriggerConfig(filename):
+    """
+    Returns a list of trigger objects
+    that correspond to the rules set
+    in the file filename
+    """
+    # Here's some code that we give you
+    # to read in the file and eliminate
+    # blank lines and comments
+    triggerfile = open(filename, "r")
+    all = [ line.rstrip() for line in triggerfile.readlines() ]
+    lines = []
+    for line in all:
+        if len(line) == 0 or line[0] == '#':
+            continue
+        lines.append(line)
+
+    # TODO: Problem 11
+    # 'lines' has a list of lines you need to parse
+    # Build a set of triggers from it and
+    # return the appropriate ones
+    
+import thread
+
+def main_thread(p):
+    # A sample trigger list - you'll replace
+    # this with something more configurable in Problem 11
+    t1 = SubjectTrigger("Trump")
+    t2 = SummaryTrigger("MIT")
+    t3 = PhraseTrigger("White House")
+    t4 = OrTrigger(t2, t3)
+    triggerlist = [t1, t4]
+    
+    # TODO: Problem 11
+    # After implementing readTriggerConfig, uncomment this line 
+    #triggerlist = readTriggerConfig("triggers.txt")
+
+    guidShown = []
+    
+    while True:
+        print "Polling..."
+
+        # Get stories from Google's Top Stories RSS news feed
+        stories = process("http://news.google.com/?output=rss")
+        # Get stories from Yahoo's Top Stories RSS news feed
+        stories.extend(process("http://rss.news.yahoo.com/rss/topstories"))
+
+        # Only select stories we're interested in
+        stories = filter_stories(stories, triggerlist)
+    
+        # Don't print a story if we have already printed it before
+        newstories = []
+        for story in stories:
+            if story.get_guid() not in guidShown:
+                newstories.append(story)
+        
+        for story in newstories:
+            guidShown.append(story.get_guid())
+            p.newWindow(story)
+
+        print "Sleeping..."
+        time.sleep(SLEEPTIME)
+
+SLEEPTIME = 60 #seconds -- how often we poll
+if __name__ == '__main__':
+    p = Popup()
+    thread.start_new_thread(main_thread, (p,))
+    p.start()
+
