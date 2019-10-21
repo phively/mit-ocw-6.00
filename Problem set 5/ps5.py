@@ -210,7 +210,55 @@ def filter_stories(stories, triggerlist):
 ## User-Specified Triggers
 #======================
 
-def readTriggerConfig(filename):
+def createTriggerFromLine(triggerdict, tname, tkeyword, args, debug):
+    """
+    Creates a trigger based on the parameters passed from the config file.
+    triggerdict = dictionary of trigger names/locations
+    tname = name of trigger to be created
+    tkeyword = keyword of trigger type to be created
+    args = trigger arguments
+    """
+    # Check trigger type
+    # Basic triggers use args as-is
+    if tkeyword == 'TITLE':
+        if debug:
+            print('TITLE trigger')
+        tmp_trigger = TitleTrigger(args)
+    elif tkeyword == 'SUBJECT':
+        if debug:
+            print('SUBJECT trigger')
+        tmp_trigger = SubjectTrigger(args)
+    elif tkeyword == 'SUMMARY':
+        if debug:
+            print('SUMMARY trigger')
+        tmp_trigger = SummaryTrigger(args)
+    elif tkeyword == 'PHRASE':
+        if debug:
+            print('PHRASE trigger')
+        tmp_trigger = PhraseTrigger(args)
+    
+    # The other triggers need to treat args as names of triggers
+    else:
+        targs = string.split(args, ' ')    
+        if tkeyword == 'NOT':
+            if debug:
+                print('NOT trigger using ' + targs[0])
+            tmp_trigger = NotTrigger(triggerdict[targs[0]])
+        elif tkeyword == 'AND':
+            if debug:
+                print('AND trigger using ' + targs[0] + ', ' + targs[1])
+            tmp_trigger = AndTrigger(triggerdict[targs[0]], triggerdict[targs[1]])
+        elif tkeyword == 'OR':
+            if debug:
+                print('OR trigger using ' + targs[0] + ', ' + targs[1])
+            tmp_trigger = OrTrigger(triggerdict[targs[0]], triggerdict[targs[1]])
+        else:
+            return None
+        
+    # Update trigger name pointer
+    triggerdict[tname] = tmp_trigger
+
+def readTriggerConfig(filename, debug = False):
     """
     Returns a list of trigger objects
     that correspond to the rules set
@@ -232,20 +280,69 @@ def readTriggerConfig(filename):
     # Build a set of triggers from it and
     # return the appropriate ones
     
+    # Create variables to be used
+    triggerdict = {}
+    triggerlist = []
+    
+    # Iterate through the lines
+    for line in lines:
+        # Split the parsed line into parameters
+        # Definitely an opportunity to clean this up some more but it works...            
+        tmpline = string.split(line, ' ', maxsplit = 2)
+        tname = tmpline[0]
+        tkeyword = tmpline[1]
+        args = tmpline[2]
+        # Debug output
+        if debug:
+            print('=== Current config file line ===')
+            print('name = ' + tname)
+            print('keyword = ' + tkeyword)
+            print('args = ' + args)
+        
+        # Check if it's an ADD line
+        if tname == 'ADD':
+            # Debug output
+            if debug:
+                print('ADD line')
+            triggerlist.append(triggerdict[tkeyword])
+            if debug:
+                print('Adding trigger ' + tkeyword)
+            for arg in string.split(args):
+                if debug:
+                    print('Adding trigger ' + arg)
+                triggerlist.append(triggerdict[arg])
+        # Create a trigger for this line
+        else:
+            tmp_trigger = createTriggerFromLine(triggerdict, tname, tkeyword, args, debug)
+            # Debug output
+            if debug:
+                print('=== Current trigger dictionary ===')
+                for key in triggerdict:
+                    print(str(key) + ' = ' + str(triggerdict.get(key)))
+                print('=== Current trigger list ===')
+                for t in triggerlist:
+                    print(str(t))
+    
+    return triggerlist
+    
+# Run this for debugging output
+# readTriggerConfig("triggers.txt", debug = True)
+            
+    
 import thread
 
 def main_thread(p):
     # A sample trigger list - you'll replace
     # this with something more configurable in Problem 11
-    t1 = SubjectTrigger("Trump")
-    t2 = SummaryTrigger("MIT")
-    t3 = PhraseTrigger("White House")
-    t4 = OrTrigger(t2, t3)
-    triggerlist = [t1, t4]
+#    t1 = SubjectTrigger("Trump")
+#    t2 = SummaryTrigger("MIT")
+#    t3 = PhraseTrigger("White House")
+#    t4 = OrTrigger(t2, t3)
+#    triggerlist = [t1, t4]
     
     # TODO: Problem 11
     # After implementing readTriggerConfig, uncomment this line 
-    #triggerlist = readTriggerConfig("triggers.txt")
+    triggerlist = readTriggerConfig("triggers.txt")
 
     guidShown = []
     

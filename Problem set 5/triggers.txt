@@ -3,10 +3,10 @@
 #  news stories!
 
 # title trigger named t1
-t1 TITLE nfl
+t1 TITLE Trump
 
 # subject trigger named t2
-t2 SUBJECT Japan
+t2 SUBJECT Trump
 
 # phrase trigger named t3
 t3 PHRASE Supreme Court
