@@ -57,7 +57,7 @@ class RectangularRoom(object):
     A room has a width and a height and contains (width * height) tiles. At any
     particular time, each of these tiles is either clean or dirty.
     """
-    def __init__(self, width, height):
+    def __init__(self, width, height, debug = False):
         """
         Initializes a rectangular room with the specified width and height.
 
@@ -66,9 +66,22 @@ class RectangularRoom(object):
         width: an integer > 0
         height: an integer > 0
         """
-        raise NotImplementedError
+        # Set room dimensions
+        self.width = width
+        self.height = height
+        # Create room tiles
+        self.tiles = {}
+        for m in range(self.width):
+            for n in range(self.height):
+                self.tiles[m, n] = 'dirty'
+        # Debug output
+        if debug:
+            print('=== RectangularRoom object ===')
+            print(str(self.width) + ' by ' + str(self.height))
+            for tile in self.tiles:
+                    print(str(tile) + ' = ' + str(self.tiles.get(tile)))
     
-    def cleanTileAtPosition(self, pos):
+    def cleanTileAtPosition(self, pos, debug = False):
         """
         Mark the tile under the position POS as cleaned.
 
@@ -76,8 +89,15 @@ class RectangularRoom(object):
 
         pos: a Position
         """
-        raise NotImplementedError
-
+        # Retrieve position coordinates
+        m = math.floor(pos.getX())
+        n = math.floor(pos.getY())
+        # Clean corresponding room tile
+        self.tiles[m, n] = 'clean'
+        # Debug output
+        if debug:
+            print('Tile (' + str(m) + ', ' + str(n) + ') is: ' + self.tiles[m, n])
+        
     def isTileCleaned(self, m, n):
         """
         Return True if the tile (m, n) has been cleaned.
@@ -88,7 +108,9 @@ class RectangularRoom(object):
         n: an integer
         returns: True if (m, n) is cleaned, False otherwise
         """
-        raise NotImplementedError
+        if self.tiles[m, n] == 'clean':
+            return True
+        return False
     
     def getNumTiles(self):
         """
@@ -96,7 +118,7 @@ class RectangularRoom(object):
 
         returns: an integer
         """
-        raise NotImplementedError
+        return self.width * self.height
 
     def getNumCleanedTiles(self):
         """
@@ -104,15 +126,23 @@ class RectangularRoom(object):
 
         returns: an integer
         """
-        raise NotImplementedError
-
+        # Cleaned tile counter
+        num_cleaned = 0
+        for m in range(self.width):
+            for n in range(self.height):
+                num_cleaned += self.isTileCleaned(m, n)
+        return num_cleaned
+    
     def getRandomPosition(self):
         """
         Return a random position inside the room.
 
         returns: a Position object.
         """
-        raise NotImplementedError
+        return Position(
+                random.uniform(0, self.width)
+                , random.uniform(0, self.height)
+        )
 
     def isPositionInRoom(self, pos):
         """
@@ -121,7 +151,7 @@ class RectangularRoom(object):
         pos: a Position object.
         returns: True if pos is in the room, False otherwise.
         """
-        raise NotImplementedError
+        return 0 <= pos.getX() <= self.width and 0 <= pos.getY() <= self.height
 
 
 class Robot(object):
