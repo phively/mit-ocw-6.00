@@ -238,7 +238,15 @@ class StandardRobot(Robot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError
+        move_attempt = self.position.getNewPosition(self.direction, self.speed)
+        if self.room.isPositionInRoom(move_attempt):
+            self.position = self.setRobotPosition(move_attempt)
+            self.room.cleanTileAtPosition(self.position)
+        # Assumption: if robot hits a wall, it returns to the starting position
+        # and cleans before selecting a new direction
+        else:
+            self.room.cleanTileAtPosition(self.position)
+            self.direction = random.uniform(0, 360)
 
 # === Problem 3
 
